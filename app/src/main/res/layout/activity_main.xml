@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.guest.weatherapi.MainActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/background"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="false"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView"
+        android:textColor="#FFF"
+        android:paddingTop="25dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Enter a city to see it&apos;s forecast!"
+        android:layout_alignParentStart="false"
+        android:textSize="27dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/userZip"
+        android:textColor="#FFF"
+        android:hint="Zipcode"
+        android:textColorHint="#FFF"
+        android:gravity="center"
+        android:textSize="40dp"
+        android:paddingTop="250dp"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="33dp"
+        android:width="200dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:id="@+id/getWeatherButton"
+        android:layout_below="@+id/userZip"
+        android:background="#FFA500"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="34dp"
+        android:width="100dp" />
+</RelativeLayout>
