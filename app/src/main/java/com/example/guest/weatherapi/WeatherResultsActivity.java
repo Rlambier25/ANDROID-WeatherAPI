@@ -1,12 +1,16 @@
 package com.example.guest.weatherapi;
 
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+
+import com.example.guest.weatherapi.adapters.WeatherListAdapter;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,46 +22,61 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherResultsActivity extends AppCompatActivity {
-    //    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
-    @Bind(R.id.listView) ListView mListView;
-    public static final String TAG = WeatherResultsActivity.class.getSimpleName();
+    public static final String TAG = MainActivity.class.getSimpleName();
+
+    @Bind(R.id.recyclerView) RecyclerView mRecyclerView;
+    private WeatherListAdapter mAdapter;
+    public ArrayList<String> descriptionArray =  new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_weather_results);
         ButterKnife.bind(this);
-
-
-        Intent intent = getIntent();
-        String location = intent.getStringExtra("location");
-        getWeather(location);
+        getWeather("London,uk");
     }
 
     private void getWeather(String location) {
         final WeatherService weatherService = new WeatherService();
-
-        weatherService.getWeather(location, new Callback() {
+        weatherService.getForecast(location, new Callback() {
 
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+
             }
 
             @Override
-            public void onResponse(Call call, Response response) {
-                forecast = weatherService.processResults(response);
+            public void onResponse(Call call, Response response) throws IOException {
 
-                WeatherResultsActivity.this.runOnUiThread(new Runnable() {
+                try {
+                    String jsonData = response.body().string();
+
+                    JSONArray weatherJSON = new JSONObject(jsonData).getJSONArray("list");
+                    for (int i=0; i < weatherJSON.length(); i++) {
+                        String desc =  weatherJSON.getJSONObject(i).getJSONArray("weather").getJSONObject(0).getString("description");
+                        descriptionArray.add(desc);
+                    }
+                    Log.v(TAG, String.valueOf(descriptionArray));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mAdapter = new WeatherListAdapter(getApplicationContext(), descriptionArray);
+                        mRecyclerView.setAdapter(mAdapter);
+                        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(WeatherResultsActivity.this);
+                        mRecyclerView.setLayoutManager(layoutManager);
+                        mRecyclerView.setHasFixedSize(true);
 
-                            Log.d(TAG, "Weather: " + forecast.getWeatherMain());
-                            Log.d(TAG, "Description: " + forecast.getDescription());
-                            Log.d(TAG, "Temperature: " + forecast.getTemp());
-                            Log.d(TAG, "City: " + forecast.getCityName());
-                        }
                     }
+                });
             }
-         });
+        });
     }
+}
